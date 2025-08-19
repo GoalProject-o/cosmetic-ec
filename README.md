@@ -126,7 +126,7 @@ npm run type-check
 
 ```bash
 # 1. リポジトリクローン
-git clone https://github.com/[ユーザー名]/tajik-cosmetics-system.git
+git clone https://github.com/GoalProject-o/tajik-cosmetics-system.git
 cd tajik-cosmetics-system
 
 # 2. 依存関係インストール
