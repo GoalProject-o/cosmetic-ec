@@ -71,6 +71,23 @@ npm run build
 npm run type-check
 ```
 
+### 2台間の運用（再クローン不要）
+・変更した側：
+```bash
+git add .
+git commit -m "変更内容"
+git push origin <ブランチ名>  # main直pushでなければPR運用推奨
+
+・もう一方のPC（作業開始時に毎回）:
+bash
+git pull origin <ブランチ名>  # 最新化
+
+・途中で未コミットの作業がある状態で最新化したいとき:
+git stash
+git pull
+git stash pop
+```
+
 ### 実装状況
 
 #### Phase 1-3: 基盤システム ✅ **完了**
