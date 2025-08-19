@@ -1,0 +1,354 @@
+"use client"
+
+import { useState } from 'react'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Select } from '@/components/ui/select'
+import { ProductCore, ProductPhysical, ProductPurchase } from '@/types'
+
+interface ProductFormData {
+  basicInfo: Partial<ProductCore>
+  physicalInfo: Partial<ProductPhysical>
+  purchaseInfo: Partial<ProductPurchase>
+}
+
+export function ProductRegistrationForm() {
+  const [formData, setFormData] = useState<ProductFormData>({
+    basicInfo: {
+      name: { ja: '', ru: '', tg: '' },
+      description: { ja: '', ru: '', tg: '' },
+      status: 'draft'
+    },
+    physicalInfo: {
+      weight: 0,
+      dimensions: { length: 0, width: 0, height: 0 },
+      containerInfo: {
+        material: 'plastic',
+        size: 0,
+        isDangerous: false
+      }
+    },
+    purchaseInfo: {
+      supplier: {
+        name: '',
+        type: 'other',
+        location: ''
+      },
+      purchasePrice: 0,
+      minimumOrderQuantity: 1,
+      leadTimeDays: 7
+    }
+  })
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    console.log('Form submitted:', formData)
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {/* 基本情報 */}
+      <Card>
+        <CardHeader>
+          <CardTitle>基本情報</CardTitle>
+          <CardDescription>商品の基本的な情報を入力してください</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">SKU</label>
+              <Input 
+                placeholder="SKU-001" 
+                value={formData.basicInfo.sku || ''}
+                onChange={(e) => setFormData(prev => ({
+                  ...prev,
+                  basicInfo: { ...prev.basicInfo, sku: e.target.value }
+                }))}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">HSコード</label>
+              <Input 
+                placeholder="3304.99.00" 
+                value={formData.basicInfo.hsCode || ''}
+                onChange={(e) => setFormData(prev => ({
+                  ...prev,
+                  basicInfo: { ...prev.basicInfo, hsCode: e.target.value }
+                }))}
+              />
+            </div>
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium mb-1">商品名（日本語）</label>
+            <Input 
+              placeholder="商品名を入力" 
+              value={formData.basicInfo.name?.ja || ''}
+              onChange={(e) => setFormData(prev => ({
+                ...prev,
+                basicInfo: { 
+                  ...prev.basicInfo, 
+                  name: { ...prev.basicInfo.name, ja: e.target.value }
+                }
+              }))}
+            />
+          </div>
+          
+          <div>
+            <label className="block text-sm font-medium mb-1">商品名（ロシア語）</label>
+            <Input 
+              placeholder="Название товара" 
+              value={formData.basicInfo.name?.ru || ''}
+              onChange={(e) => setFormData(prev => ({
+                ...prev,
+                basicInfo: { 
+                  ...prev.basicInfo, 
+                  name: { ...prev.basicInfo.name, ru: e.target.value }
+                }
+              }))}
+            />
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">ブランド</label>
+              <Input 
+                placeholder="ブランド名" 
+                value={formData.basicInfo.brand || ''}
+                onChange={(e) => setFormData(prev => ({
+                  ...prev,
+                  basicInfo: { ...prev.basicInfo, brand: e.target.value }
+                }))}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">製造元</label>
+              <Input 
+                placeholder="製造会社名" 
+                value={formData.basicInfo.manufacturer || ''}
+                onChange={(e) => setFormData(prev => ({
+                  ...prev,
+                  basicInfo: { ...prev.basicInfo, manufacturer: e.target.value }
+                }))}
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">ステータス</label>
+            <Select 
+              value={formData.basicInfo.status}
+              onChange={(e) => setFormData(prev => ({
+                ...prev,
+                basicInfo: { ...prev.basicInfo, status: e.target.value as any }
+              }))}
+            >
+              <option value="draft">下書き</option>
+              <option value="active">アクティブ</option>
+              <option value="inactive">非アクティブ</option>
+              <option value="discontinued">販売終了</option>
+            </Select>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* 物理属性 */}
+      <Card>
+        <CardHeader>
+          <CardTitle>物理属性</CardTitle>
+          <CardDescription>商品の物理的な仕様を入力してください</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">重量 (kg)</label>
+              <Input 
+                type="number" 
+                step="0.01" 
+                placeholder="0.50" 
+                value={formData.physicalInfo.weight || ''}
+                onChange={(e) => setFormData(prev => ({
+                  ...prev,
+                  physicalInfo: { ...prev.physicalInfo, weight: Number(e.target.value) }
+                }))}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">容器材質</label>
+              <Select 
+                value={formData.physicalInfo.containerInfo?.material}
+                onChange={(e) => setFormData(prev => ({
+                  ...prev,
+                  physicalInfo: { 
+                    ...prev.physicalInfo, 
+                    containerInfo: { 
+                      ...prev.physicalInfo.containerInfo, 
+                      material: e.target.value as any 
+                    }
+                  }
+                }))}
+              >
+                <option value="plastic">プラスチック</option>
+                <option value="glass">ガラス</option>
+                <option value="metal">金属</option>
+                <option value="paper">紙</option>
+              </Select>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">長さ (cm)</label>
+              <Input 
+                type="number" 
+                placeholder="10" 
+                value={formData.physicalInfo.dimensions?.length || ''}
+                onChange={(e) => setFormData(prev => ({
+                  ...prev,
+                  physicalInfo: { 
+                    ...prev.physicalInfo, 
+                    dimensions: { 
+                      ...prev.physicalInfo.dimensions, 
+                      length: Number(e.target.value) 
+                    }
+                  }
+                }))}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">幅 (cm)</label>
+              <Input 
+                type="number" 
+                placeholder="5" 
+                value={formData.physicalInfo.dimensions?.width || ''}
+                onChange={(e) => setFormData(prev => ({
+                  ...prev,
+                  physicalInfo: { 
+                    ...prev.physicalInfo, 
+                    dimensions: { 
+                      ...prev.physicalInfo.dimensions, 
+                      width: Number(e.target.value) 
+                    }
+                  }
+                }))}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">高さ (cm)</label>
+              <Input 
+                type="number" 
+                placeholder="15" 
+                value={formData.physicalInfo.dimensions?.height || ''}
+                onChange={(e) => setFormData(prev => ({
+                  ...prev,
+                  physicalInfo: { 
+                    ...prev.physicalInfo, 
+                    dimensions: { 
+                      ...prev.physicalInfo.dimensions, 
+                      height: Number(e.target.value) 
+                    }
+                  }
+                }))}
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* 購入情報 */}
+      <Card>
+        <CardHeader>
+          <CardTitle>購入情報</CardTitle>
+          <CardDescription>仕入れに関する情報を入力してください</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="grid md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">仕入先名</label>
+              <Input 
+                placeholder="ドン・キホーテ" 
+                value={formData.purchaseInfo.supplier?.name || ''}
+                onChange={(e) => setFormData(prev => ({
+                  ...prev,
+                  purchaseInfo: { 
+                    ...prev.purchaseInfo, 
+                    supplier: { 
+                      ...prev.purchaseInfo.supplier!, 
+                      name: e.target.value 
+                    }
+                  }
+                }))}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">仕入先タイプ</label>
+              <Select 
+                value={formData.purchaseInfo.supplier?.type}
+                onChange={(e) => setFormData(prev => ({
+                  ...prev,
+                  purchaseInfo: { 
+                    ...prev.purchaseInfo, 
+                    supplier: { 
+                      ...prev.purchaseInfo.supplier!, 
+                      type: e.target.value as any 
+                    }
+                  }
+                }))}
+              >
+                <option value="donki">ドン・キホーテ</option>
+                <option value="matsumoto">マツモトキヨシ</option>
+                <option value="amazon">Amazon</option>
+                <option value="other">その他</option>
+              </Select>
+            </div>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">仕入価格 (円)</label>
+              <Input 
+                type="number" 
+                placeholder="1500" 
+                value={formData.purchaseInfo.purchasePrice || ''}
+                onChange={(e) => setFormData(prev => ({
+                  ...prev,
+                  purchaseInfo: { ...prev.purchaseInfo, purchasePrice: Number(e.target.value) }
+                }))}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">最小注文数</label>
+              <Input 
+                type="number" 
+                placeholder="1" 
+                value={formData.purchaseInfo.minimumOrderQuantity || ''}
+                onChange={(e) => setFormData(prev => ({
+                  ...prev,
+                  purchaseInfo: { ...prev.purchaseInfo, minimumOrderQuantity: Number(e.target.value) }
+                }))}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">リードタイム (日)</label>
+              <Input 
+                type="number" 
+                placeholder="7" 
+                value={formData.purchaseInfo.leadTimeDays || ''}
+                onChange={(e) => setFormData(prev => ({
+                  ...prev,
+                  purchaseInfo: { ...prev.purchaseInfo, leadTimeDays: Number(e.target.value) }
+                }))}
+              />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <div className="flex justify-end space-x-4">
+        <Button type="button" variant="outline">キャンセル</Button>
+        <Button type="submit">登録</Button>
+      </div>
+    </form>
+  )
+}
